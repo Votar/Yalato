@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Yalato</string>
+    <string name="common_error">Something goes wrong</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="er_default_inner_error">Нет ответа от сервера</string>
+    <string name="empty_list">Список пуст</string>
+    <string name="try_again">Повторить</string>
+    <string name="er_rate_limit">Превышен лимит</string>
+    <string name="text_search">Search…</string>
+    <string name="title_activity_details">DetailsActivity</string>
+    <string name="text_download">Download</string>
+    <string name="look_at">Look at</string>
+    <string name="send_to">Send to</string>
+    <string name="text_download_have_started">Loading file %s</string>
+    <string name="text_download_finished_with_success">Downloading %s have finished with success</string>
+    <string name="text_download_finished_with_fail">Downloading %s have finished with failure</string>
+    <string name="required_permissions">You should garant permissions to write external storage</string>
+    <string name="er_to_get_download_link">Couldn\'t get download link</string>
+    <string name="notification_success_loading_title">Loading is compete</string>
+    <string name="notification_success_loading_text">Open file %s</string>
+</resources>

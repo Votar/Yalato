@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_list_photo_main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.list.ImageListActivity">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/activity_list_photo_swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:background="@color/primary_dark"
+            android:id="@+id/activity_list_photo_images_list_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <RelativeLayout
+        android:id="@+id/activity_list_photo_empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/activity_list_photo_empty_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/empty_list"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/activity_list_photo_try_again_bth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/activity_list_photo_empty_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/fab_margin"
+            android:text="@string/try_again" />
+
+    </RelativeLayout>
+</RelativeLayout>
