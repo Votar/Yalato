@@ -10,21 +10,15 @@ import io.reactivex.Observable
  */
 interface ImageListContract {
     interface View : BaseViewContract {
-        fun showProgress()
-        fun hideProgress()
-        fun showEmptyView()
-        fun hideEmptyView()
-        fun bindResult(result: List<PhotoRest>)
+
     }
 
     interface ViewModel : ViewModelContract<View> {
         fun submitSearch(query: String?)
-        fun onRefresh()
         fun onRetryClick()
 
         fun getListObservable(): Observable<List<PhotoRest>>
-        fun getMessageObservable(): Observable<Int>
-        fun getLoadingSubject(): Observable<Boolean>
+        fun onScrollStateChanged(itemCount: Int, lastVisiblePosition: Int, newState: Int)
 
     }
 

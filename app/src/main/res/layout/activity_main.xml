@@ -4,19 +4,28 @@
     android:id="@+id/activity_list_photo_main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/primary_dark"
     tools:context=".ui.list.ImageListActivity">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/activity_list_photo_swipe_refresh"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
 
         <android.support.v7.widget.RecyclerView
-            android:background="@color/primary_dark"
-            android:id="@+id/activity_list_photo_images_list_recycler"
+            android:id="@+id/photos_recycler"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+
+        <ProgressBar
+            android:id="@+id/list_photo_progress"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="32dp" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/activity_list_photo_empty_view"

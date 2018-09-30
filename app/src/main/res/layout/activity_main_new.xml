@@ -5,13 +5,13 @@
     android:id="@+id/activity_list_photo_main_content"
     android:layout_height="match_parent">
     <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/activity_list_photo_swipe_refresh"
+        android:id="@+id/photos_swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
             android:background="@color/primary_dark"
-            android:id="@+id/activity_list_photo_images_list_recycler"
+            android:id="@+id/photos_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </android.support.v4.widget.SwipeRefreshLayout>

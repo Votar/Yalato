@@ -12,11 +12,15 @@ abstract class BaseActivity<in V : BaseViewContract, out T : ViewModelContract<V
     /**
      * Base ViewModel
      */
-    protected val disposables = CompositeDisposable()
+    protected var disposables = CompositeDisposable()
 
     protected abstract fun getViewModel(): T
 
-    protected abstract fun subscribe()
+    open fun subscribe() {
+        if (disposables.isDisposed)
+            disposables = CompositeDisposable()
+        disposables.add(getViewModel().getMessageObservable().subscribe { showMessage(it) })
+    }
 
     protected fun dispose() {
         if (disposables.isDisposed.not())

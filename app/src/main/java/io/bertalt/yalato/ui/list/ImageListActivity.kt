@@ -4,23 +4,28 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.View
 import io.bertalt.yalato.R
 import io.bertalt.yalato.api.response.PhotoRest
 import io.bertalt.yalato.base.BaseActivity
+import io.bertalt.yalato.utils.beGone
+import io.bertalt.yalato.utils.beVisible
+import io.bertalt.yalato.utils.beVisibleIf
 import kotlinx.android.synthetic.main.activity_main.*
 
 class ImageListActivity : BaseActivity<ImageListContract.View, ImageListContract.ViewModel>(), ImageListContract.View {
 
+    val vProgress get() = list_photo_progress
 
     private val onPhotoClickListener = object : ListPhotoAdapter.OnItemClickListener {
         override fun photoClicked(photo: PhotoRest) {
             showDetails(photo)
         }
     }
-    private val adapter get() = activity_list_photo_images_list_recycler.adapter as ListPhotoAdapter
+    private val adapter get() = photos_recycler.adapter as ListPhotoAdapter
     lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,48 +44,49 @@ class ImageListActivity : BaseActivity<ImageListContract.View, ImageListContract
 
     override fun subscribe() {
         disposables.addAll(
-                getViewModel().getListObservable().subscribe { adapter.swapData(it) },
-                getViewModel().getLoadingSubject().subscribe { },
-                getViewModel().getMessageObservable().subscribe { showMessage(it) }
-        )
+                getViewModel().getLoadingObservable().subscribe { show -> vProgress.beVisibleIf(show) },
+                getViewModel().getListObservable().subscribe {
+                    if(it.isEmpty())
+                        showEmptyView()
+                    else{
+                        hideEmptyView()
+                        adapter.swapData(it)
+                    }
+                })
     }
 
     private fun setupLayout() {
-        activity_list_photo_swipe_refresh.setOnRefreshListener(refreshListener)
         activity_list_photo_try_again_bth.setOnClickListener { getViewModel().onRetryClick() }
-        activity_list_photo_images_list_recycler.layoutManager = LinearLayoutManager(this)
-        activity_list_photo_images_list_recycler.adapter = ListPhotoAdapter(onPhotoClickListener)
+        photos_recycler.layoutManager = LinearLayoutManager(this)
+        photos_recycler.adapter = ListPhotoAdapter(onPhotoClickListener)
+        photos_recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                (recyclerView.layoutManager as LinearLayoutManager).let {
+                    getViewModel().onScrollStateChanged(
+                            it.itemCount,
+                            it.findLastCompletelyVisibleItemPosition(),
+                            newState
+                    )
+                }
+
+            }
+        })
+
     }
 
-    override fun showProgress() {
-        activity_list_photo_swipe_refresh.isRefreshing = true
+    fun showEmptyView() {
+        activity_list_photo_empty_view.beVisible()
+        photos_recycler.beGone()
     }
 
-    override fun hideProgress() {
-        activity_list_photo_swipe_refresh.isRefreshing = false
-    }
-
-    override fun showEmptyView() {
-        activity_list_photo_empty_view.visibility = View.VISIBLE
-        activity_list_photo_images_list_recycler.visibility = View.GONE
-    }
-
-    override fun hideEmptyView() {
-        activity_list_photo_empty_view.visibility = View.GONE
-        activity_list_photo_images_list_recycler.visibility = View.VISIBLE
-    }
-
-    override fun bindResult(result: List<PhotoRest>) {
-        adapter.swapData(result)
+    fun hideEmptyView() {
+        activity_list_photo_empty_view.beGone()
+        photos_recycler.beVisible()
     }
 
     override fun getRootView(): View = activity_list_photo_main_content
 
     override fun getViewModel(): ImageListContract.ViewModel = ViewModelProviders.of(this).get(ImageListViewModel::class.java)
-
-    private val refreshListener = SwipeRefreshLayout.OnRefreshListener {
-        getViewModel().onRefresh()
-    }
 
     private val searchCallbackListener = object : SearchView.OnQueryTextListener {
         override fun onQueryTextSubmit(query: String?): Boolean {

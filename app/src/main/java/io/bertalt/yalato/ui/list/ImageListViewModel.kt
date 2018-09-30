@@ -13,45 +13,57 @@ import io.reactivex.subjects.BehaviorSubject
 
 class ImageListViewModel(val api: GetPhotosService = ApiUnsplash.service) : BaseViewModel<ImageListContract.View>(), ImageListContract.ViewModel {
 
+
     val listSubject: BehaviorSubject<List<PhotoRest>> = BehaviorSubject.create()
-    val messagesSubject: BehaviorSubject<Int> = BehaviorSubject.create()
-    val loadingSubject: BehaviorSubject<Boolean> = BehaviorSubject.create()
 
     override fun getListObservable(): Observable<List<PhotoRest>> = listSubject
-    override fun getMessageObservable(): Observable<Int> = messagesSubject
-    override fun getLoadingSubject(): Observable<Boolean> = loadingSubject
 
 
-    val repository: PhotosRepository = PhotosRepository(api)
+    val galleryRepository: PhotosRepository = PhotosRepository(api)
+    val searchRepositories = HashMap<String, PhotosRepository>()
+
     var lastPage = 0
 
     override fun onStart() {
         super.onStart()
 
-        listSubject.onNext(repository.localPhoto)
+        listSubject.onNext(galleryRepository.localPhoto)
         if (lastPage == 0)
             fetchPhotos()
     }
 
     private fun fetchPhotos() {
         loadingSubject.onNext(true)
-        lastPage += 1
-        disposables.add(repository.loadPhotos(lastPage)
+        disposables.add(galleryRepository.loadPhotos(lastPage.plus(1))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(fetchConsumer, errorConsumer))
     }
 
     override fun submitSearch(query: String?) {
-
+        if(query != null && query.isNotEmpty()){
+            loadingSubject.onNext(true)
+            searchPhotos(query)
+        }else{
+            fetchPhotos()
+        }
     }
 
-    override fun onRefresh() {
-
+    private fun searchPhotos(query: String) {
+        val repository = searchRepositories[query]
+        if(repository!= null){
+            
+        }
     }
 
     override fun onRetryClick() {
 
+    }
+
+
+    override fun onScrollStateChanged(itemCount: Int, lastVisiblePosition: Int, newState: Int) {
+        if (itemCount - lastVisiblePosition < 5 && loadingSubject.value.not())
+            fetchPhotos()
     }
 
     private val errorConsumer: Consumer<Throwable> = Consumer<Throwable> {
@@ -60,8 +72,10 @@ class ImageListViewModel(val api: GetPhotosService = ApiUnsplash.service) : Base
     }
 
     private val fetchConsumer = Consumer<List<PhotoRest>> { list ->
-        repository.localPhoto.addAll(list)
-        listSubject.onNext(repository.localPhoto)
+        lastPage += 1
+        galleryRepository.localPhoto.addAll(list)
+        listSubject.onNext(galleryRepository.localPhoto)
+        loadingSubject.onNext(false)
     }
 
 }
